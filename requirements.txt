@@ -1,0 +1,12 @@
+requests
+BeautifulSoup4
+pandas
+pdfplumber
+openpyxl
+docx 
+python-pptx
+urllib3
+certifi 
+webdriver-manager
+PyYAML
+lxml
