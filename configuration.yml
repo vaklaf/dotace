@@ -4,13 +4,13 @@ regions:
     name: Plzeňský kraj
     url: https://dotace.plzensky-kraj.cz/verejnost/zadosti?_name=Zadosti&_search=false&nd=1742109491719&rows=25&page=1&sidx=&sord=asc, https://dotace.plzensky-kraj.cz/verejnost/individualni-zadosti?_name=IndividualniZadosti&_search=false&nd=1742131019737&rows=25&page=1&sidx=&sord=asc
     process: 0
-  jck:
-    name: Jihoceský kraj
-    process: 0
+  zlk:
+    name: Zlínský kraj
+    process: 1
   vys:
     name: Kraj Vysocina
     url:
-    process: 1
+    process: 0
 paths:
   outputs_root: outputs
   output_folder_prefix: web_crawler_output

@@ -3,9 +3,9 @@ This module contains the event handlers for the logger.
 '''
 
 from .events import subscirbe
-from  ..lib.logger.loglevel import LogLevel
-from  ..lib.logger.custom_message import CustomMessage
-from  ..lib.logger.logger import log
+from  ..library.logger.loglevel import LogLevel
+from  ..library.logger.custom_message import CustomMessage
+from  ..library.logger.logger import log
 
 
 def handle_module_not_found(data):
@@ -72,6 +72,36 @@ def handle_rows_found(data):
          'message':' Rows found:.',
          'data':data['data']
          })
+    
+def handle_processing_year(data):
+    log(LogLevel.INFO,{'module':data['module'],
+         'message':' Processing_year:',
+         'data':data['data']
+         })
+
+def handle_processed_year(data):
+    log(LogLevel.INFO,{'module':data['module'],
+         'message':' Year processed.',
+         'data':data['data']
+         })
+    
+def handle_no_data_exist(data):
+    log(LogLevel.WARNING,{'module':data['module'],
+         'message':' No data exists.',
+         'data':data['data']
+         })
+
+def handle_total_pages_to_process(data):
+    log(LogLevel.INFO,{'module':data['module'],
+         'message':'Pages to process',
+         'data':data['data']
+         })
+    
+def handle_processing_page(data):
+    log(LogLevel.INFO,{'module':data['module'],
+         'message':'Pages to process',
+         'data':data['data']
+         })
 
 def setup_logger_event_handlers():
     '''Sets up the event handlers for the logger'''
@@ -83,4 +113,8 @@ def setup_logger_event_handlers():
     subscirbe('output_file_created',handle_output_file_created)
     subscirbe('no_applications_found',handle_no_applications_found)
     subscirbe('rows_found',handle_rows_found)
-
+    subscirbe('processing_year',handle_processing_year)
+    subscirbe('processed_year',handle_processed_year)
+    subscirbe('no_data_exist',handle_no_data_exist)
+    subscirbe('total_pages_to_process',handle_total_pages_to_process)
+    subscirbe('processing_page',handle_processing_page)

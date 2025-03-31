@@ -1,11 +1,11 @@
 '''Main entry point of the application'''
 import yaml
 
-from .lib.uitilities import get_output_file_time_suffix
-from .lib.logger.logger import setup_logger
-from .lib.cls_regions import Regions
-from .api.logger_listener import setup_logger_event_handlers
-from .lib.regions.schemes.cls_plk_schemes import *
+from .library.uitilities import get_output_file_time_suffix
+from .library.logger.logger import setup_logger
+from .library.cls_regions import Regions
+from .apis.logger_listener import setup_logger_event_handlers
+from .library.regions.schemes.cls_plk_schemes import *
 
 def load_configuration()-> dict:
     # '''Loads the configuration from the configuration file'''
