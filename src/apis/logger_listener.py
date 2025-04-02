@@ -102,6 +102,12 @@ def handle_processing_page(data):
          'message':'Pages to process',
          'data':data['data']
          })
+    
+def handle_connection_error(data):
+    log(LogLevel.CRITICAL,{'module':data['module'],
+         'message':'Pages to process',
+         'data':data['data']
+         })
 
 def setup_logger_event_handlers():
     '''Sets up the event handlers for the logger'''
@@ -118,3 +124,4 @@ def setup_logger_event_handlers():
     subscirbe('no_data_exist',handle_no_data_exist)
     subscirbe('total_pages_to_process',handle_total_pages_to_process)
     subscirbe('processing_page',handle_processing_page)
+    subscirbe('connection_error',handle_connection_error)

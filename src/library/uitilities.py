@@ -3,12 +3,18 @@ from datetime import datetime as dt
 
 import urllib3
 
+from requests.exceptions import ConnectTimeout
+
 
 def get_html_content(url)->str:
-    response = urllib3.request("GET",url)
-    if response.status == 200:
-        content = response.data
-        return content
+    
+    try:
+        response = urllib3.request("GET",url)
+        if response.status == 200:
+            content = response.data
+            return content
+    except ConnectTimeout:
+        raise ConnectTimeout(url)
 
 def build_output_path(output_root: Path, output_folder_prefix: str, region_key: str) -> Path:
     path = Path().cwd() / output_root / f"{output_folder_prefix}_{region_key}"

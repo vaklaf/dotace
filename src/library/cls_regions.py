@@ -3,6 +3,8 @@
 import importlib.machinery
 import os
 
+from requests.exceptions import ConnectTimeout
+
 from ..apis.events import post_event
 
 class Regions:
@@ -43,5 +45,7 @@ class Regions:
                 post_event('module_not_found',{'module':__name__,'data':{'data':class_name}})
             except AttributeError as err:
                 print(f'Error1: {err}')
+            except ConnectTimeout as err:
+                post_event('connection_error',{'module':__name__,'data':{'data':err}})
             except Exception as err:
                 print(f'Error2: {err}')
