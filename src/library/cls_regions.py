@@ -6,6 +6,7 @@ import os
 from requests.exceptions import ConnectTimeout
 
 from ..apis.events import post_event
+from .Downloader.exeptions import FileExistsAlready,DownloadingFailure,FolderCannotBeCreated
 
 class Regions:
     ''' Třída pro zpracování jednotlivých regionů '''
@@ -47,5 +48,11 @@ class Regions:
                 print(f'Error1: {err}')
             except ConnectTimeout as err:
                 post_event('connection_error',{'module':__name__,'data':{'data':err}})
+            except FileExistsAlready as err:
+                post_event('file_already_exists_error',{'module':__name__,'data':{'data':err}})
+            except FolderCannotBeCreated as err:
+                post_event('folder_cannot_be_created_error',{'module':__name__,'data':{'data':err}})
+            except DownloadingFailure as err:
+                post_event('downloading_failure_error',{'module':__name__,'data':{'data':err}})
             except Exception as err:
                 print(f'Error2: {err}')

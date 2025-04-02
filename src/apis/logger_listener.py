@@ -108,6 +108,24 @@ def handle_connection_error(data):
          'message':'Pages to process',
          'data':data['data']
          })
+    
+def handle_file_already_exists_error(data):
+    log(LogLevel.ERROR,{'module':data['module'],
+         'message':'File already exists.',
+         'data':data['data']
+         })
+    
+def handle_folder_cannot_be_created_error(data):
+    log(LogLevel.ERROR,{'module':data['module'],
+         'message':'Folder cannot be created.',
+         'data':data['data']
+         })
+
+def handle_downloading_failure_error(data):
+    log(LogLevel.CRITICAL,{'module':data['module'],
+         'message':'Downloading failure.',
+         'data':data['data']
+         })
 
 def setup_logger_event_handlers():
     '''Sets up the event handlers for the logger'''
@@ -125,3 +143,6 @@ def setup_logger_event_handlers():
     subscirbe('total_pages_to_process',handle_total_pages_to_process)
     subscirbe('processing_page',handle_processing_page)
     subscirbe('connection_error',handle_connection_error)
+    subscirbe('file_already_exists_error',handle_file_already_exists_error)
+    subscirbe('folder_cannot_be_created_error',handle_folder_cannot_be_created_error)
+    subscirbe('downloading_failure_error',handle_downloading_failure_error)
