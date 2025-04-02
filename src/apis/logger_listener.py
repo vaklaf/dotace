@@ -110,8 +110,8 @@ def handle_connection_error(data):
          })
     
 def handle_file_already_exists_error(data):
-    log(LogLevel.ERROR,{'module':data['module'],
-         'message':'File already exists.',
+    log(LogLevel.WARNING,{'module':data['module'],
+         'message':'SKIPPED File already exists.',
          'data':data['data']
          })
     
@@ -124,6 +124,24 @@ def handle_folder_cannot_be_created_error(data):
 def handle_downloading_failure_error(data):
     log(LogLevel.CRITICAL,{'module':data['module'],
          'message':'Downloading failure.',
+         'data':data['data']
+         })
+    
+def handle_downloading_file(data):
+    log(LogLevel.INFO,{'module':data['module'],
+         'message':'Downloading file.',
+         'data':data['data']
+         })
+    
+def handle_downloaded(data):
+    log(LogLevel.INFO,{'module':data['module'],
+         'message':'File downloaded.',
+         'data':data['data']
+         })
+
+def handle_file_found(data):
+    log(LogLevel.INFO,{'module':data['module'],
+         'message':'File found.',
          'data':data['data']
          })
 
@@ -146,3 +164,7 @@ def setup_logger_event_handlers():
     subscirbe('file_already_exists_error',handle_file_already_exists_error)
     subscirbe('folder_cannot_be_created_error',handle_folder_cannot_be_created_error)
     subscirbe('downloading_failure_error',handle_downloading_failure_error)
+    subscirbe('downloading_file',handle_downloading_file)
+    subscirbe('file_downloaded',handle_downloaded)
+    subscirbe('file_found',handle_file_found)
+    

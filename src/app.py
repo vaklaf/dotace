@@ -5,6 +5,7 @@ from .library.uitilities import get_output_file_time_suffix
 from .library.logger.logger import setup_logger
 from .library.cls_regions import Regions
 from .apis.logger_listener import setup_logger_event_handlers
+from .apis.downloader_listener import setup_downloader_events_listener
 from .library.regions.schemes.cls_plk_schemes import *
 
 def load_configuration()-> dict:
@@ -20,6 +21,7 @@ def main():
     _cfg = load_configuration()
     setup_logger(_cfg['paths']['logs_root'],_output_sufix)
     setup_logger_event_handlers()
+    setup_downloader_events_listener()
     rgns = Regions(_cfg,_output_sufix)
     rgns.crawl()
 

@@ -30,7 +30,7 @@ def setup_logger(path:str, timestamp:str):
     errorFileHadler.setLevel(logging.ERROR)
     consoleHandler:logging.Handler = logging.StreamHandler()
     consoleHandler.setFormatter(OnScreenLoggerFormater())
-    consoleHandler.setLevel(logging.DEBUG)
+    consoleHandler.setLevel(logging.INFO)
 
     try:
         logging.basicConfig(

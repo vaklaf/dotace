@@ -19,18 +19,13 @@ from itertools import cycle
 from src.apis.events import post_event
 from src.library.uitilities import build_output_path
 from src.library.uitilities import get_html_content
-from src.library.transformation_by_data_type import cut_off_currency
-from src.library.transformation_by_data_type import remove_nbsp
-from src.library.transformation_by_data_type import format_number_for_excel
+from src.library.uitilities import inject_timestamp_to_file_name
 from src.library.custom_enums import CurrencySymbolPosition as CSP
 from .schemes.ischema import IScheme
 from .schemes.cls_zlk_schemes import ZlkTitulyScheme,ZlkDtlScheme
 from .cls_abstract_region import AbstractRegion
+from src.library.downloader.file_downloader import download_file
 
-
-class Scope(Enum):
-    TTILES = 0
-    APPLICATIONS = 1
 
 PDF_FILES = 'pdf_files'
 KEY_WORDS: list = ['vysledky', 'výsledky','rozhodnuti','rozhodnutí','podporene','podpořené']
@@ -129,7 +124,7 @@ class ZlkRegion(AbstractRegion):
                 for i in range (2,pages_count+1):
                     post_event('processing_page',{'module':__name__,'data':{'data':str(i)}})
                     new_url = self.rewrite_url(url,{'f-year':year,'page':i})
-                    #print(new_url)
+
                     data = self._get_appeals_list(content)
                     df_tmp = pd.DataFrame.from_records(data,columns=headers)
                     df_tmp.insert(0,'ROK',year)
@@ -160,7 +155,7 @@ class ZlkRegion(AbstractRegion):
         details_links = zip(titles,urls)
         
         for z in details_links:
-            print(z)
+
             content = get_html_content(z[1])
             if content:
                 details =  self._get_appeal_details(content)
@@ -171,13 +166,24 @@ class ZlkRegion(AbstractRegion):
             r:list = []
             rs:list[list[str]] = []
             if details:
-                #tmp_zip = list(zip(list(z),cycle(details)))
-                #df_tmp = pd.DataFrame.from_records(list(tmp_zip))
                 details_count = len(details)   
 
                 for idx,detail in enumerate(details):
+                    detail = list(detail)
+                    detail[0] = inject_timestamp_to_file_name(detail[0],self.output_files_suffix)
                     _r = list(z)+list(detail) + [details_count,idx+1]
                     if _r not in rs:
+                        post_event('file_found',{
+                            'module':__name__,
+                            'data':{
+                                'data':detail[0]
+                            },
+                            'file':{
+                                'path':self.output_path / 'files',
+                                'url':detail[1],
+                                'file_name':detail[0]
+                            }
+                        })
                         rs.append(_r)
                 
                 df_tmp =  pd.DataFrame.from_records(rs,columns=columns)
@@ -190,12 +196,18 @@ class ZlkRegion(AbstractRegion):
             else:
                 continue
                 
-        print(df_details)
+        details_csv_file = self.output_path / f'{self._key}_details.csv'
                 
-        df_details.to_csv('zlk_details.csv',index=False)
+        df_details.to_csv(details_csv_file,index=False)
         
-        # all_data.merge(df_details,how='left',on=['TITUL','DETAIL_LINK'])
-        all_data.to_csv('all_data_merged.cvs',index=False)
+        # links = set(df_details['FILE_LINK'])
+        # names = set(df_details['FILE_NAME'])
+        
+        # tmp = zip(links,names)
+        # files_path =  self.output_path / 'files'
+        # for z in tmp:
+        #     if all(list(z)):
+  
             
         post_event('end_porocess_region', {'module':__name__,'data':{'data': self._name}})
 
@@ -273,9 +285,7 @@ class ZlkRegion(AbstractRegion):
             
         return filtered_links
         
-        
-         
-    
+
     @staticmethod        
     def _write(df:pd.DataFrame,opath:Path,file_name:str,sep=';'):
         post_event('create_output_file',{'module':__name__,'data':{'data':file_name}})

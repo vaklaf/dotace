@@ -50,6 +50,7 @@ class Regions:
                 post_event('connection_error',{'module':__name__,'data':{'data':err}})
             except FileExistsAlready as err:
                 post_event('file_already_exists_error',{'module':__name__,'data':{'data':err}})
+                continue
             except FolderCannotBeCreated as err:
                 post_event('folder_cannot_be_created_error',{'module':__name__,'data':{'data':err}})
             except DownloadingFailure as err:

@@ -10,9 +10,9 @@ def download_file(output_path:Path, url:str, file_name:str):
     Stáhne soubor z dané URL a uloží ho do zadané složky.
 
     Args:
-        cesta_k_slozce (Path): Cesta ke složce, kam se má soubor uložit.
-        url_souboru (str): URL adresa souboru ke stažení.
-        nazev_souboru (str): Název souboru, pod kterým se má uložit.
+        output_path (Path): Cesta ke složce, kam se má soubor uložit.
+        url (str): URL adresa souboru ke stažení.
+        file_name (str): Název souboru, pod kterým se má uložit.
         
     Raises:
         FileExistsAlready: Pokud cílový soubor již existuje.
@@ -22,7 +22,8 @@ def download_file(output_path:Path, url:str, file_name:str):
     target_path = output_path / file_name
 
     if target_path.exists():
-        raise FileExistsAlready(target_path)
+        return
+        #raise FileExistsAlready(target_path)
 
 
     try:
