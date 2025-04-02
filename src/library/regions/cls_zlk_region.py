@@ -136,16 +136,14 @@ class ZlkRegion(AbstractRegion):
 
             post_event('processed_year',{'module':__name__,'data':{'data':year}})
         
-        #print(all_data)
-        
-        csv_file = f'{self._key}_{'tituly'}_{self.output_files_suffix}.csv'
+        csv_file = f'{self._key}_tituly_{self.output_files_suffix}.csv'
 
         __class__._write(all_data,self.output_path,csv_file)
         
         scheme = ZlkDtlScheme()
         columns = scheme.get_sorted_scheme_members()
-
-        clear_downloads_folder(self.output_path / 'files')
+        download_folder = self.output_path / 'files'
+        clear_downloads_folder(download_folder)
         
         df_details = pd.DataFrame([],columns=columns)
         
@@ -153,6 +151,7 @@ class ZlkRegion(AbstractRegion):
         titles = list(all_data['TITUL'])
         urls = list(all_data['DETAIL_LINK'])
         
+        print(f'{len(titles)}:{len(urls)}')
         details_links = zip(titles,urls)
         
         for z in details_links:
@@ -181,7 +180,7 @@ class ZlkRegion(AbstractRegion):
                                 'data':detail[0]
                             },
                             'file':{
-                                'path':self.output_path / 'files',
+                                'path':download_folder,
                                 'url':detail[1],
                                 'file_name':detail[0]
                             }
@@ -198,19 +197,10 @@ class ZlkRegion(AbstractRegion):
             else:
                 continue
                 
-        details_csv_file = self.output_path / f'{self._key}_details.csv'
+        details_csv_file = self.output_path / f'{self._key}_details_{self.output_files_suffix}.csv'
                 
         df_details.to_csv(details_csv_file,index=False)
-        
-        # links = set(df_details['FILE_LINK'])
-        # names = set(df_details['FILE_NAME'])
-        
-        # tmp = zip(links,names)
-        # files_path =  self.output_path / 'files'
-        # for z in tmp:
-        #     if all(list(z)):
-  
-            
+                   
         post_event('end_porocess_region', {'module':__name__,'data':{'data': self._name}})
 
 
@@ -265,9 +255,9 @@ class ZlkRegion(AbstractRegion):
                                     _row.append(cleaned_text)
                                 else:
                                     _row.append('')
-
-            rows.append(_row)
-            _row = []
+            if _row not in rows:
+                rows.append(_row)
+                _row = []
 
         rows = list(map(lambda row: (row[:5] + [row[5].split()[1]] + [row[5].split()[3]] + row[6:]), rows))
 
