@@ -1,9 +1,9 @@
 import requests
-import os
+import shutil
 
 from pathlib import Path
 
-from .exeptions import FileExistsAlready,DownloadingFailure,FolderCannotBeCreated
+from .exeptions import DownloadingFailure,FolderCannotBeCreated
 
 def download_file(output_path:Path, url:str, file_name:str):
     """
@@ -41,3 +41,23 @@ def download_file(output_path:Path, url:str, file_name:str):
     except OSError as e:
         raise FolderCannotBeCreated(f"Error while creating '{str(output_path)}': {e}")
 
+def clear_downloads_folder(path:Path):
+    """
+    Vymaže veškerý obsah zadané složky (soubory a podsložky).
+
+    Args:
+        path: Objekt pathlib.Path reprezentující cestu ke složce.
+    """
+    if not path.is_dir():
+        print(f"Chyba: Zadaná cesta '{path}' není složka.")
+        return
+
+    for item in path.iterdir():
+        try:
+            if item.is_file():
+                item.unlink()  # Smaže soubor
+            elif item.is_dir():
+                shutil.rmtree(item)  # Rekurzivně smaže složku a její obsah
+            print(f"Smazáno: {item}")
+        except Exception as e:
+            print(f"Chyba při mazání '{item}': {e}")
