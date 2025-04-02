@@ -14,6 +14,7 @@ from random import randint
 from datetime import datetime as dt
 from time import sleep
 from enum import Enum
+from itertools import cycle
 
 from src.apis.events import post_event
 from src.library.uitilities import build_output_path
@@ -23,7 +24,7 @@ from src.library.transformation_by_data_type import remove_nbsp
 from src.library.transformation_by_data_type import format_number_for_excel
 from src.library.custom_enums import CurrencySymbolPosition as CSP
 from .schemes.ischema import IScheme
-from .schemes.cls_zlk_schemes import ZlkTitulyScheme
+from .schemes.cls_zlk_schemes import ZlkTitulyScheme,ZlkDtlScheme
 from .cls_abstract_region import AbstractRegion
 
 
@@ -32,6 +33,7 @@ class Scope(Enum):
     APPLICATIONS = 1
 
 PDF_FILES = 'pdf_files'
+KEY_WORDS: list = ['vysledky', 'výsledky','rozhodnuti','rozhodnutí','podporene','podpořené']
 
 class ZlkRegion(AbstractRegion):
     '''
@@ -83,7 +85,7 @@ class ZlkRegion(AbstractRegion):
             # Builing new url, finding first page for currently prcessed year.
             new_url = self.rewrite_url(url,{'f-year':year,'page':1})
             post_event('processing_page',{'module':__name__,'data':{'data':str(1)}})
-            # Fetching content and proceesing in by BS.
+            # Fetching content and processing in by BS.
             content = get_html_content(new_url)
             soup = bs(content,'html.parser')
             # Trying found p element with class name not_found_item
@@ -117,7 +119,7 @@ class ZlkRegion(AbstractRegion):
             else:
                 continue
 
-            # If pages_count is greater then 1 goging throuhg next runs
+            # If pages_count is greater then 1 going through next runs
             # Because the page 1 has been processed setting up start page to 2.
             if pages_count > 1:
 
@@ -145,7 +147,56 @@ class ZlkRegion(AbstractRegion):
         csv_file = f'{self._key}_{'tituly'}_{self.output_files_suffix}.csv'
 
         __class__._write(all_data,self.output_path,csv_file)
+        
+        scheme = ZlkDtlScheme()
+        columns = scheme.get_sorted_scheme_members()
 
+        df_details = pd.DataFrame([],columns=columns)
+        
+        details:list=[]
+        titles = list(all_data['TITUL'])
+        urls = list(all_data['DETAIL_LINK'])
+        
+        details_links = zip(titles,urls)
+        
+        for z in details_links:
+            print(z)
+            content = get_html_content(z[1])
+            if content:
+                details =  self._get_appeal_details(content)
+            else:
+                post_event('no_data_exists',{'module':__name__,'data':{'data':z[1]}})
+            
+            
+            r:list = []
+            rs:list[list[str]] = []
+            if details:
+                #tmp_zip = list(zip(list(z),cycle(details)))
+                #df_tmp = pd.DataFrame.from_records(list(tmp_zip))
+                details_count = len(details)   
+
+                for idx,detail in enumerate(details):
+                    _r = list(z)+list(detail) + [details_count,idx+1]
+                    if _r not in rs:
+                        rs.append(_r)
+                
+                df_tmp =  pd.DataFrame.from_records(rs,columns=columns)
+                df_details = pd.concat([df_details,df_tmp],ignore_index=True)
+                df_tmp = None
+                rs = []
+                                         
+                sleep(randint(7,10))
+            
+            else:
+                continue
+                
+        print(df_details)
+                
+        df_details.to_csv('zlk_details.csv',index=False)
+        
+        # all_data.merge(df_details,how='left',on=['TITUL','DETAIL_LINK'])
+        all_data.to_csv('all_data_merged.cvs',index=False)
+            
         post_event('end_porocess_region', {'module':__name__,'data':{'data': self._name}})
 
 
@@ -207,6 +258,23 @@ class ZlkRegion(AbstractRegion):
         rows = list(map(lambda row: (row[:5] + [row[5].split()[1]] + [row[5].split()[3]] + row[6:]), rows))
 
         return rows
+    
+    def _get_appeal_details(self, content: str)->list[tuple[str,str]]:
+        
+        soup = bs(content, 'html.parser')
+        file_list = soup.find('div', class_='files-list')
+        filtered_links: list = []
+        if file_list:
+            all_links = file_list.find_all('a')
+            filtered_links = [
+                (str.strip(link.text.split('(')[0]),link['href']) for link in all_links
+                if any(keyword in link.text.lower() for keyword in KEY_WORDS)
+            ]
+            
+        return filtered_links
+        
+        
+         
     
     @staticmethod        
     def _write(df:pd.DataFrame,opath:Path,file_name:str,sep=';'):
