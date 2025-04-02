@@ -24,7 +24,7 @@ from src.library.custom_enums import CurrencySymbolPosition as CSP
 from .schemes.ischema import IScheme
 from .schemes.cls_zlk_schemes import ZlkTitulyScheme,ZlkDtlScheme
 from .cls_abstract_region import AbstractRegion
-from src.library.downloader.file_downloader import download_file
+from src.library.downloader.file_downloader import clear_downloads_folder
 
 
 PDF_FILES = 'pdf_files'
@@ -46,7 +46,6 @@ class ZlkRegion(AbstractRegion):
         )
     ]
 
-    #ARCHIVED_YEARS:list[str] = [str(y) for y in range(2021,dt.now().year)]
     archived_years:list[str] = []
 
     def __init__(self,params: dict,output_suffix:str)->None:
@@ -146,6 +145,8 @@ class ZlkRegion(AbstractRegion):
         scheme = ZlkDtlScheme()
         columns = scheme.get_sorted_scheme_members()
 
+        clear_downloads_folder(self.output_path / 'files')
+        
         df_details = pd.DataFrame([],columns=columns)
         
         details:list=[]
@@ -166,6 +167,7 @@ class ZlkRegion(AbstractRegion):
             r:list = []
             rs:list[list[str]] = []
             if details:
+                
                 details_count = len(details)   
 
                 for idx,detail in enumerate(details):
