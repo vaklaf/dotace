@@ -7,7 +7,6 @@ import csv
 import pandas as pd
 import urllib3
 
-from urllib.parse import urlencode, urlunparse, urlparse,parse_qs
 from pathlib import Path
 from bs4 import BeautifulSoup as bs
 from random import randint
@@ -20,6 +19,7 @@ from src.apis.events import post_event
 from src.library.uitilities import build_output_path
 from src.library.uitilities import get_html_content
 from src.library.uitilities import inject_timestamp_to_file_name
+from src.library.uitilities import rewrite_url
 from src.library.custom_enums import CurrencySymbolPosition as CSP
 from .schemes.ischema import IScheme
 from .schemes.cls_zlk_schemes import ZlkTitulyScheme,ZlkDtlScheme
@@ -77,7 +77,7 @@ class ZlkRegion(AbstractRegion):
             post_event('processing_year',{'module':__name__,'data':{'data':year}})
           
             # Builing new url, finding first page for currently prcessed year.
-            new_url = self.rewrite_url(url,{'f-year':year,'page':1})
+            new_url = rewrite_url(url,{'f-year':year,'page':1})
             post_event('processing_page',{'module':__name__,'data':{'data':str(1)}})
             # Fetching content and processing in by BS.
             content = get_html_content(new_url)
@@ -122,7 +122,7 @@ class ZlkRegion(AbstractRegion):
                 # and concatenate it with all data.
                 for i in range (2,pages_count+1):
                     post_event('processing_page',{'module':__name__,'data':{'data':str(i)}})
-                    new_url = self.rewrite_url(url,{'f-year':year,'page':i})
+                    new_url = rewrite_url(url,{'f-year':year,'page':i})
 
                     data = self._get_appeals_list(content)
                     df_tmp = pd.DataFrame.from_records(data,columns=headers)
@@ -202,20 +202,6 @@ class ZlkRegion(AbstractRegion):
         df_details.to_csv(details_csv_file,index=False)
                    
         post_event('end_porocess_region', {'module':__name__,'data':{'data': self._name}})
-
-
-    def rewrite_url(self, url: str, new_query: dict | None = None) -> str:
-        _parsedUrl = urlparse(url)
-        dict_query = parse_qs(_parsedUrl.query)
-
-        if new_query:
-            for key, value in new_query.items():
-                dict_query[key] = [str(value)]
-            new_query_string = urlencode(dict_query, doseq=True)
-        else:
-            new_query_string = _parsedUrl.query
-
-        return urlunparse((_parsedUrl.scheme, _parsedUrl.netloc, _parsedUrl.path, _parsedUrl.params, new_query_string, _parsedUrl.fragment))
 
     def _get_appeals_list(self,content:str)->list[list[str]]:
         appeals:list = []

@@ -1,5 +1,6 @@
 from pathlib import Path
 from datetime import datetime as dt
+from urllib.parse import urlencode, urlunparse, urlparse,parse_qs
 
 import urllib3
 
@@ -29,6 +30,20 @@ def check_output_path(output_path: Path) -> None:
 
 def get_output_file_time_suffix() -> str:
     return dt.now().strftime('%Y%m%d_%H%M%S')
+
+def rewrite_url(url: str, new_query: dict | None = None) -> str:
+        _parsedUrl = urlparse(url)
+        dict_query = parse_qs(_parsedUrl.query)
+
+        if new_query:
+            for key, value in new_query.items():
+                dict_query[key] = [str(value)]
+            new_query_string = urlencode(dict_query, doseq=True)
+        else:
+            new_query_string = _parsedUrl.query
+
+        return urlunparse((_parsedUrl.scheme, _parsedUrl.netloc, _parsedUrl.path, _parsedUrl.params, new_query_string, _parsedUrl.fragment))
+
 
 def inject_timestamp_to_file_name(file_name:str,timestamp:str)-> str:
     parts = file_name.split('.')
