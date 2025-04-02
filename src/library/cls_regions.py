@@ -6,7 +6,7 @@ import os
 from requests.exceptions import ConnectTimeout
 
 from ..apis.events import post_event
-from .Downloader.exeptions import FileExistsAlready,DownloadingFailure,FolderCannotBeCreated
+from .downloader.exeptions import FileExistsAlready,DownloadingFailure,FolderCannotBeCreated
 
 class Regions:
     ''' Třída pro zpracování jednotlivých regionů '''
