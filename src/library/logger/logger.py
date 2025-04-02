@@ -12,7 +12,7 @@ from .custom_message import CustomMessage
 
 
 logger = logging.getLogger(__name__)
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 
 
 def setup_logger(path:str, timestamp:str):
