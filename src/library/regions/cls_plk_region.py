@@ -12,6 +12,7 @@ import requests
 
 from src.apis.events import post_event
 from src.library.uitilities import build_output_path
+from src.library.uitilities import rewrite_url
 from src.library.transformation_by_data_type import transformation_by_data_type
 from .schemes.ischema import IScheme
 from .schemes.cls_plk_schemes import PlkZadostiScheme, PlkZadostIndividualniScheme, PlkTitulyScheme
