@@ -6,15 +6,19 @@ regions:
     process: 0
   zlk:
     name: Zlínský kraj
-    process: 1
+    process: 0
   vys:
     name: Kraj Vysocina
     url:
     process: 0
-  jzk:
+  jhk:
     name: Jihočeský kraj
     url:
     process: 0
+  stc:
+    name: Středočeský kraj
+    url:
+    process: 1
 paths:
   outputs_root: outputs
   output_folder_prefix: web_crawler_output
