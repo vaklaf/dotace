@@ -11,6 +11,10 @@ regions:
     name: Kraj Vysocina
     url:
     process: 0
+  jzk:
+    name: Jihočeský kraj
+    url:
+    process: 0
 paths:
   outputs_root: outputs
   output_folder_prefix: web_crawler_output
