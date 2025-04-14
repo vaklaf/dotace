@@ -77,7 +77,7 @@ class ZlkRegion(AbstractRegion):
             post_event('processing_year',{'module':__name__,'data':{'data':year}})
           
             # Builing new url, finding first page for currently prcessed year.
-            new_url = rewrite_url(url,{'f-year':year,'page':1})
+            new_url = rewrite_url(url, new_query= {'f-year':year,'page':1})
             post_event('processing_page',{'module':__name__,'data':{'data':str(1)}})
             # Fetching content and processing in by BS.
             content = get_html_content(new_url)
@@ -122,7 +122,7 @@ class ZlkRegion(AbstractRegion):
                 # and concatenate it with all data.
                 for i in range (2,pages_count+1):
                     post_event('processing_page',{'module':__name__,'data':{'data':str(i)}})
-                    new_url = rewrite_url(url,{'f-year':year,'page':i})
+                    new_url = rewrite_url(url, new_query={'f-year':year,'page':i})
 
                     data = self._get_appeals_list(content)
                     df_tmp = pd.DataFrame.from_records(data,columns=headers)
