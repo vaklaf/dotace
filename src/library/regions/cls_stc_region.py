@@ -5,7 +5,7 @@ from src.apis.events import post_event
 from src.library.utilities.others import build_output_path
 from src.library.utilities.others import inject_timestamp_to_file_name
 from .cls_abstract_region import AbstractRegion
-from src.library.downloader.file_downloader import clear_downloads_folder
+from src.library.downloader.downloader import clear_downloads_folder
 
 class StcRegion(AbstractRegion):
     '''

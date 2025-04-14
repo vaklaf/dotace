@@ -3,7 +3,7 @@ from functools import wraps
 
 from .events import subscirbe
 from .events import post_event
-from ..library.downloader.file_downloader import download_file
+from ..library.downloader.downloader import download_file
 
 
 def log(fn):

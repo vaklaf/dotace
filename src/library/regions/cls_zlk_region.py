@@ -17,14 +17,14 @@ from itertools import cycle
 
 from src.apis.events import post_event
 from src.library.utilities.others import build_output_path
-from src.library.utilities.others import get_html_content
 from src.library.utilities.others import inject_timestamp_to_file_name
 from src.library.utilities.others import rewrite_url
 from src.library.custom_enums import CurrencySymbolPosition as CSP
 from .schemes.ischema import IScheme
 from .schemes.cls_zlk_schemes import ZlkTitulyScheme,ZlkDtlScheme
 from .cls_abstract_region import AbstractRegion
-from src.library.downloader.file_downloader import clear_downloads_folder
+from src.library.downloader.downloader import get_html_content
+from src.library.downloader.downloader import clear_downloads_folder
 
 
 PDF_FILES = 'pdf_files'

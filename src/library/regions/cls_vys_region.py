@@ -16,11 +16,11 @@ from enum import Enum
 
 from src.apis.events import post_event
 from src.library.utilities.others import build_output_path
-from src.library.utilities.others import get_html_content
 from src.library.transformation_by_data_type import cut_off_currency
 from src.library.transformation_by_data_type import remove_nbsp
 from src.library.transformation_by_data_type import format_number_for_excel
 from src.library.custom_enums import CurrencySymbolPosition as CSP
+from src.library.downloader.downloader import get_html_content
 from .schemes.ischema import IScheme
 from .schemes.cls_vys_schemes import VysTitulyScheme,VysZadostiScheme
 from .cls_abstract_region import AbstractRegion
