@@ -179,3 +179,5 @@ outputs/*/*.*
 *.csv
 *.cvs
 *.pdf
+
+outputs/
