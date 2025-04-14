@@ -1,7 +1,7 @@
 '''Main entry point of the application'''
 import yaml
 
-from .library.uitilities import get_output_file_time_suffix
+from .library.utilities.others import get_output_file_time_suffix
 from .library.logger.logger import setup_logger
 from .library.cls_regions import Regions
 from .apis.logger_listener import setup_logger_event_handlers

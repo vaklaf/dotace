@@ -5,7 +5,7 @@ from pathlib import Path
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
-from src.library.uitilities import rewrite_url
+from src.library.utilities.others import rewrite_url
 
 
 class TestRewriteUrl(unittest.TestCase):
