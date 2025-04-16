@@ -81,7 +81,7 @@ Samotné spuštění aplikace se pak provádí z terminálu (příkazové řádk
 >pip install -r requirements.txt
 ```
 
-## Project structure
+## Struktura projektu
 
 Projekt je strukturován následujcím způsobem
 
@@ -153,3 +153,7 @@ Projekt v této chvíli ještě nelze považovat za kompletní. V současné chv
 Kód pro Jihočeský kraj je třeba upravit tak, aby odpovídal koncetpu již zpracovaných krajů. Zbývající kraje je třeba doplnit komplentě.
 
 Zároveň je třeba kód optimalizovat a řádně otestovat. V tuto chvíli lze hovořit o verzi 0.0.1.
+
+### Nice To Have
+
+Vytvoření GUI pro snazší ovládání a nastavování konfiguračních paramterů bez nutnostoti přípé editace konfigruačního souboru.
