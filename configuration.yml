@@ -6,7 +6,7 @@ regions:
     process: 0
   zlk:
     name: Zlínský kraj
-    process: 0
+    process: 1
   vys:
     name: Kraj Vysocina
     url:
@@ -14,7 +14,7 @@ regions:
   jhk:
     name: Jihočeský kraj
     url:
-    process: 1
+    process: 0
   stc:
     name: Středočeský kraj
     url:
