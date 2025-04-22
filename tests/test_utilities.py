@@ -2,6 +2,7 @@ import unittest
 import sys
 
 from pathlib import Path
+from datetime import datetime as dt
 
 sys.path.append(str(Path(__file__).resolve().parent.parent))
 
@@ -52,6 +53,28 @@ class TestRewriteUrl(unittest.TestCase):
         expected_url = "http://example.com/path?param1=value1&param2=value2#newfragment"
         result = rewrite_url(url, new_fragment="newfragment")
         self.assertEqual(result, expected_url)
+        
+    def test_rewrite_url_in_jhk_context(self):
+        urls:list = []
+        _roky = [str(y) for y in  range(2015,dt.now().year+1)]
+        url = "https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2020&op=Vyhledej"
+        for rok in _roky:
+            urls.append(rewrite_url(url, new_query={'rok':rok}))
+            
+        expected_urls = [   
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2015&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2016&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2017&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2018&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2019&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2020&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2021&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2022&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2023&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2024&op=Vyhledej',
+                         'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2025&op=Vyhledej',
+                        ]
+        self.assertEqual(urls, expected_urls)
 
 
 if __name__ == "__main__":
