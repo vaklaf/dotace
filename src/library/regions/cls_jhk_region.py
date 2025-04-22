@@ -8,7 +8,7 @@ import io
 from datetime import datetime as dt
 
 TEXTY = ["Došlé a podpořené žádosti", "Žádosti podané do"]
-roky = [str(y) for y in  range(2020,dt.now().year+1)]
+roky = [str(y) for y in  range(2015,dt.now().year+1)]
 # roky = ['2024']
 
 for rok in roky:
@@ -94,3 +94,73 @@ for rok in roky:
             print(f"Chyba při stahování {url}: {e}")
     
 print("Stažení dokončeno.")
+
+''' Středo český kraj region class. '''
+from pathlib import Path
+
+from src.apis.events import post_event
+from src.library.utilities.others import build_output_path
+from src.library.utilities.others import inject_timestamp_to_file_name
+from src.library.downloader.downloader import rewrite_url
+from .cls_abstract_region import AbstractRegion
+from src.library.downloader.downloader import clear_downloads_folder
+
+class JhkRegion(AbstractRegion):
+    '''
+    Class for Jihocesky kraj region
+    '''
+    _texty = ["Došlé a podpořené žádosti", "Žádosti podané do"]
+    _roky = [str(y) for y in  range(2015,dt.now().year+1)]   
+    _key: str = 'jhk'
+    _urls:list[str] = [
+            'https://www.kraj-jihocesky.cz/cs/ku_dotace/schvalene?rok=2020&op=Vyhledej'
+    ]
+    
+    def __init__(self,params: dict,output_suffix:str)->None:
+        self._name = params
+        self.output_path = build_output_path(Path(
+            params['paths']['outputs_root']), params['paths']['output_folder_prefix'], self._key)
+        self.output_files_suffix = output_suffix
+
+    def crawl(self):
+
+        post_event('start_porocess_region', {'module':__name__,'data':{'data': self._name}})
+        url = self._urls[0]
+        for rok in self._roky:
+            url = rewrite_url(url, new_params={'rok':rok})
+            html_content = self._get_html(url)
+            if not html_content:
+                post_event('error', {'module':__name__,'data':{'data': self._name}})
+                return
+
+
+        
+        post_event('end_porocess_region', {'module':__name__,'data':{'data': self._name}})
+        
+    def get_donations_list(self,html_content:str)-> list[tuple]:
+        '''
+        Get the list of donations from the region.
+        '''
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        container = soup.find('dl', class_='styled ckeditor-accordion2')
+        
+        dt_elements = container.find_all('dt')
+        dt_dl_pairs = [(dt, dt.find_next_sibling('dd')) for dt in dt_elements if dt.find_next_sibling('dd')]
+        return dt_dl_pairs
+        
+    def parse_dt_dl_pair(self, dt_dl_pair:tuple)-> dict:
+        '''
+        Parse the dt and dl pair to get the data.
+        '''
+        dt, dl = dt_dl_pair
+        print(self.get_donation_header(dt))
+    
+    def get_donation_header(self, dt: str)-> str:
+        '''
+        Get the header of the donation.
+        '''
+        header = dt.find('a',class_='ckeditor-accordion-toggler accordion-link').text
+        header = re.sub(r'[()\./§<>:"/\\|?*]', '', header)
+        header = re.sub(r'\s+', '_', header)
+        return header
