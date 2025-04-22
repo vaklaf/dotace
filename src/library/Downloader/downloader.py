@@ -3,12 +3,19 @@ import shutil
 
 from pathlib import Path
 from urllib.parse import urlencode, urlunparse, urlparse,parse_qs,parse_qsl
+from selenium import webdriver
+from selenium.webdriver.chrome.service import Service as ChromeService
 
 import urllib3
 
 from requests.exceptions import ConnectTimeout
 
 from .exeptions import DownloadingFailure,FolderCannotBeCreated
+
+service = ChromeService(executable_path='./drivers/chromedriver-win64/chromedriver.exe')
+driver = webdriver.Chrome(service=service)
+driver.implicitly_wait(300)
+
 
 def download_file(output_path:Path, url:str, file_name:str):
     """
@@ -83,8 +90,11 @@ def rewrite_url(
     new_netloc: str | None = None,
     new_path: str | None = None,
     new_params: dict | None = None,
+    remove_params: bool = False,
     new_query: dict | None = None,
-    new_fragment: str | None = None
+    remove_query: bool = False,
+    new_fragment: str | None = None,
+    remove_fragment: bool = False,
 ) -> str:
     '''
     Rewrites the URL with new components. 
@@ -100,7 +110,7 @@ def rewrite_url(
             dict_query[key] = [str(value)]
         new_query_string = urlencode(dict_query, doseq=True)
     else:
-        new_query_string = _parsedUrl.query
+        new_query_string = _parsedUrl.query if not remove_query else ''
 
     # Update params
     if new_params:
@@ -108,7 +118,7 @@ def rewrite_url(
             dict_params[key] = [str(value)]
         new_params_string = urlencode(dict_params, doseq=True)
     else:
-        new_params_string = _parsedUrl.params
+        new_params_string =  _parsedUrl.params if not remove_params else ''
 
     # Update other parts of the URL
     scheme = new_scheme if new_scheme else _parsedUrl.scheme
@@ -118,3 +128,16 @@ def rewrite_url(
 
     # Reconstruct the URL
     return urlunparse((scheme, netloc, path, new_params_string, new_query_string, fragment))
+
+def get_html_by_selenium(url:str)->str:
+    """
+    Stáhne HTML obsah stránky pomocí Selenium WebDriver.
+
+    Args:
+        url (str): URL adresa stránky.
+    
+    Returns:
+        str: HTML obsah stránky.
+    """
+    driver.get(url)
+    return driver.page_source
